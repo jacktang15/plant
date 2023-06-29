@@ -50,6 +50,8 @@ func (k Keeper) OnRecvUpdatePostPacket(ctx sdk.Context, packet channeltypes.Pack
 		post.Title = data.Title
 		post.Content = data.Content
 		k.SetPost(ctx, post)
+		packetAck.PostID = data.PostID
+		packetAck.Title = data.Title
 	} else {
 		return packetAck, errors.New("cannot found post " + data.PostID)
 	}
@@ -79,11 +81,10 @@ func (k Keeper) OnAcknowledgementUpdatePostPacket(ctx sdk.Context, packet channe
 		if err != nil {
 			return err
 		}
-		if post, found := k.GetPost(ctx, postId); found {
-			if sentPost, found := k.GetSentPost(ctx, postId); found {
-				sentPost.Title = post.Title
-				k.SetSentPost(ctx, sentPost)
-			}
+
+		if sentPost, found := k.GetSentPost(ctx, postId); found {
+			sentPost.Title = packetAck.Title
+			k.SetSentPost(ctx, sentPost)
 		}
 
 		return nil
@@ -96,7 +97,14 @@ func (k Keeper) OnAcknowledgementUpdatePostPacket(ctx sdk.Context, packet channe
 // OnTimeoutUpdatePostPacket responds to the case where a packet has not been transmitted because of a timeout
 func (k Keeper) OnTimeoutUpdatePostPacket(ctx sdk.Context, packet channeltypes.Packet, data types.UpdatePostPacketData) error {
 
-	// TODO: packet timeout logic
+	k.AppendTimedoutPost(
+		ctx,
+		types.TimedoutPost{
+			Title:   data.Title,
+			Creator: data.Creator,
+			Chain:   packet.GetDestPort() + "-" + packet.GetDestChannel(),
+		},
+	)
 
 	return nil
 }

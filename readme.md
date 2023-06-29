@@ -251,4 +251,35 @@ SentPost:
 pagination:
   next_key: null
   total: "0"
-  ```
+```
+# send update post
+```
+  (base) tomxiong@DESKTOP-61U8AN0:~/cosmos/planet$ planetd tx blog send-update-post blog channel-0 "0" "Hello1
+" "Hello Mars, I'm Alice from Earth too" --from alice --chain-id earth --home ~/.earth
+```
+query again:
+```
+(base) tomxiong@DESKTOP-61U8AN0:~/cosmos/planet$ planetd q blog list-sent-post
+SentPost:
+- chain: blog-channel-0
+  creator: cosmos1sl8ddtskypy4padjjpw8p76r8tr9tvm47lv42u
+  id: "0"
+  postID: "0"
+  title: Hello1
+pagination:
+  next_key: null
+  total: "0"
+```
+```
+(base) tomxiong@DESKTOP-61U8AN0:~/cosmos/planet$ planetd q blog list-post --node tcp://localhost:26659
+Post:
+- content: Hello Mars, I'm Alice from Earth too
+  creator: blog-channel-0-cosmos1sl8ddtskypy4padjjpw8p76r8tr9tvm47lv42u
+  id: "0"
+  title: Hello1
+pagination:
+  next_key: null
+  total: "0"
+```
+
+
